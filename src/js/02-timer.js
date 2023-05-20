@@ -1,17 +1,3 @@
-//     Кнопка «Start» повинна бути неактивною доти, доки користувач
-// не вибрав дату в майбутньому.
-// Натисканням на кнопку «Start» починається відлік часу до обраної
-// дати з моменту натискання.
-// Відлік часу
-// Натисканням на кнопку «Start» скрипт повинен обчислювати раз
-// на секунду, скільки часу залишилось до вказаної дати,
-//     і оновлювати інтерфейс таймера, показуючи чотири
-// цифри: дні, години, хвилини і секунди у форматі xx: xx: xx: xx.
-
-// Кількість днів може складатися з більше, ніж двох цифр.
-// Таймер повинен зупинятися, коли дійшов до кінцевої дати,
-//     тобто 00: 00: 00: 00.
-
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
@@ -45,6 +31,7 @@ labels.forEach(element => {
 refs.startBtn.setAttribute('disabled', '');
 let targetDate = 0;
 let intetvalId = 0;
+
 const options = {
   enableTime: true,
   time_24hr: true,
@@ -53,7 +40,12 @@ const options = {
   onClose(selectedDates) {
     targetDate = selectedDates[0].getTime();
     if (targetDate <= Date.now()) {
-      Notify.failure('Please choose a date in the future.');
+      Notify.failure('Please choose a date in the future.', {
+        clickToClose: true,
+        position: 'left-top',
+        timeout: 1000,
+        showOnlyTheLastOne: true,
+      });
       return;
     }
     refs.startBtn.removeAttribute('disabled');
@@ -101,6 +93,12 @@ function updateTime() {
   const differDate = targetDate - Date.now();
   if (differDate <= 0) {
     clearInterval(intetvalId);
+    Notify.success('Ding-ding-ding, time is over', {
+      clickToClose: true,
+      position: 'left-top',
+      timeout: 1000,
+      showOnlyTheLastOne: true,
+    });
     return;
   }
   const formData = convertMs(differDate);
